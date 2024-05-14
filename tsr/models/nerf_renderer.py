@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from einops import rearrange, reduce
 
-from ..Vars.trutil import (
+from ..utils import (
     BaseModule,
     chunk_batch,
     get_activation,
@@ -103,16 +103,14 @@ class TriplaneNeRFRenderer(BaseModule):
         rays_d = rays_d.view(-1, 3)
         n_rays = rays_o.shape[0]
 
-        t_near, t_far, rays_valid = rays_intersect_bbox(
-            rays_o, rays_d, self.cfg.radius)
+        t_near, t_far, rays_valid = rays_intersect_bbox(rays_o, rays_d, self.cfg.radius)
         t_near, t_far = t_near[rays_valid], t_far[rays_valid]
 
         t_vals = torch.linspace(
             0, 1, self.cfg.num_samples_per_ray + 1, device=triplane.device
         )
         t_mid = (t_vals[:-1] + t_vals[1:]) / 2.0
-        z_vals = t_near * (1 - t_mid[None]) + \
-            t_far * t_mid[None]  # (N_rays, N_samples)
+        z_vals = t_near * (1 - t_mid[None]) + t_far * t_mid[None]  # (N_rays, N_samples)
 
         xyz = (
             rays_o[:, None, :] + z_vals[..., None] * rays_d[..., None, :]
@@ -138,15 +136,13 @@ class TriplaneNeRFRenderer(BaseModule):
             dim=-1,
         )
         weights = alpha * accum_prod  # (N_rays, N_samples)
-        comp_rgb_ = (weights[..., None] * mlp_out["color"]
-                     ).sum(dim=-2)  # (N_rays, 3)
+        comp_rgb_ = (weights[..., None] * mlp_out["color"]).sum(dim=-2)  # (N_rays, 3)
         opacity_ = weights.sum(dim=-1)  # (N_rays)
 
         comp_rgb = torch.zeros(
             n_rays, 3, dtype=comp_rgb_.dtype, device=comp_rgb_.device
         )
-        opacity = torch.zeros(n_rays, dtype=opacity_.dtype,
-                              device=opacity_.device)
+        opacity = torch.zeros(n_rays, dtype=opacity_.dtype, device=opacity_.device)
         comp_rgb[rays_valid] = comp_rgb_
         opacity[rays_valid] = opacity_
 

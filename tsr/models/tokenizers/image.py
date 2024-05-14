@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
 import torch
-# import torch.nn as nn
+import torch.nn as nn
 from einops import rearrange
 from huggingface_hub import hf_hub_download
 from transformers.models.vit.modeling_vit import ViTModel
 
-from ...Vars.trutil import BaseModule
+from ...utils import BaseModule
 
 
 class DINOSingleImageTokenizer(BaseModule):
@@ -41,10 +41,7 @@ class DINOSingleImageTokenizer(BaseModule):
             persistent=False,
         )
 
-    def forward(
-            self,
-            images: torch.FloatTensor,
-            **kwargs) -> torch.FloatTensor:
+    def forward(self, images: torch.FloatTensor, **kwargs) -> torch.FloatTensor:
         packed = False
         if images.ndim == 4:
             packed = True
@@ -53,8 +50,7 @@ class DINOSingleImageTokenizer(BaseModule):
         batch_size, n_input_views = images.shape[:2]
         images = (images - self.image_mean) / self.image_std
         out = self.model(
-            rearrange(images, "B N C H W -> (B N) C H W"),
-            interpolate_pos_encoding=True
+            rearrange(images, "B N C H W -> (B N) C H W"), interpolate_pos_encoding=True
         )
         local_features, global_features = out.last_hidden_state, out.pooler_output
         local_features = local_features.permute(0, 2, 1)

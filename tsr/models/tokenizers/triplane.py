@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from einops import rearrange, repeat
 
-from ...Vars.trutil import BaseModule
+from ...utils import BaseModule
 
 
 class Triplane1DTokenizer(BaseModule):

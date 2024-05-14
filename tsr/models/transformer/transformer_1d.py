@@ -43,7 +43,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from ...Vars.trutil import BaseModule
+from ...utils import BaseModule
 from .basic_transformer_block import BasicTransformerBlock
 
 
@@ -166,8 +166,7 @@ class Transformer1D(BaseModule):
             #   (1 = keep,      0 = discard)
             # convert mask into a bias that can be added to attention scores:
             #       (keep = +0,     discard = -10000.0)
-            attention_mask = (
-                1 - attention_mask.to(hidden_states.dtype)) * -10000.0
+            attention_mask = (1 - attention_mask.to(hidden_states.dtype)) * -10000.0
             attention_mask = attention_mask.unsqueeze(1)
 
         # convert encoder_attention_mask to a bias the same way we do for attention_mask
