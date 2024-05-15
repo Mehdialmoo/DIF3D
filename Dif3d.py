@@ -58,47 +58,55 @@ class Timer:
 
 
 class Runtime():
+
     def __init__(self):
-        # Create a Timer instance
         self.timer = Timer()
-        self.model = TSR()
         self.premodel = Gaussian()
+        self.model = None
         # Set up logging
         logging.basicConfig(
             format="%(asctime)s - %(levelname)s - %(message)s",
             level=logging.INFO
         )
 
-    def set_output_address(self, path):
-        os.makedirs(path, exist_ok=True)
+    def set_variables(
+            self,
+            input_path="input/",
+            output_path="output/",
+            pretrained_model="stabilityai/TripoSR",
+            chunk_size=8192,
+            padding=16,
+            foreground_ratio=0.85,
+            mc_resolution=256,
+            model_save_format="obj"
+    ):
+        self.image_path = input_path
+        self.out_path = output_path
+        self.pretrained = pretrained_model
+        self.chunk_size = chunk_size
+        self.mc_resolution = mc_resolution
+        self.format = model_save_format
+
+        self.premodel.set_variables(
+            in_path=input_path,
+            out_path=output_path,
+            foreground_ratio=foreground_ratio,
+            padding=padding)
+
+        self.output_address_chk()
+        self.processor_check()
+
+    def output_address_chk(self):
+        os.makedirs(self.out_path, exist_ok=True)
+        os.makedirs(f"{self.out_path}images/", exist_ok=True)
+        os.makedirs(f"{self.out_path}renderfiles/", exist_ok=True)
+        os.makedirs(f"{self.out_path}3dfiles/", exist_ok=True)
 
     def processor_check(self):
         # Set the device to use (GPU or CPU)
         # If a CUDA-compatible device is available,
         # use it; otherwise, use the CPU
-        self.device = "gpu" if torch.cuda.is_available() else "cpu"
-
-    def set_variables(
-            self,
-            input_path,
-            output_path,
-            pretrained_model,
-            chunk_size,
-            padding,
-            foreground_ratio,
-            mc_resolution,
-            model_save_format
-    ):
-        self.image_path = input_path
-        self.out_path = output_path
-        self.pretrained = pretrained_model,
-        self.chunk_size = chunk_size
-        self.mc_resolution = mc_resolution
-        self.format = model_save_format
-        self.premodel.set_variables(
-            path=input_path,
-            foreground_ratio=foreground_ratio,
-            padding=padding)
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def initilize(self):
         # Initialize the model
@@ -107,7 +115,7 @@ class Runtime():
         self.premodel.gassuin_load()
         self.timer.end("Initializing pre-model(Gaussian model)")
         self.timer.start("Initializing TSR (diffsusion 3D) model")
-        self.model.from_pretrained(
+        self.model = TSR.from_pretrained(
             self.pretrained,
             config_name="config.yaml",
             weight_name="model.ckpt",
@@ -120,27 +128,20 @@ class Runtime():
         # Process the input images
         # This will load and preprocess each input image
         self.timer.start("Processing images")
-        self.images_lst = []
-        for i, image_path in enumerate(self.image_path):
-            image = self.premodel.pre_process(image_path)
-            depth_image = self.premodel.depth_estimation()
 
-            # Save the preprocessed image
-            if not os.path.exists(os.path.join(self.out_path)):
-                os.makedirs(os.path.join(self.out_path))
-            image.save(
-                os.path.join(
-                    self.out_path,
-                    str(i),
-                    "Removed_BG.png"
-                )
-            )
-            self.images_lst.append(image)
+        self.image = self.premodel.pre_process()
+
+        self.depth_image = self.premodel.depth_estimation()
+
+        self.premodel.dp_comparison_visual()
+
         self.timer.end("Processing images")
 
     def modelRun(self):
-        logging.info("Running image ...")
+        logging.info("please wait this process might take a few minutes ...")
         self.timer.start("Running model")
+        self.premodel.pointcloud()
+        self.premodel.post_process()
         with torch.no_grad():
             self.scene_codes = self.model([self.image], device=self.device)
         self.timer.end("Running model")
@@ -151,12 +152,12 @@ class Runtime():
             self.scene_codes, n_views=30, return_type="pil")
         for ri, render_image in enumerate(render_images[0]):
             render_image.save(os.path.join(
-                self.out, f"render_{ri:03d}.png"))
+                f"{self.out_path}renderfiles/", f"render_{ri:03d}.png"))
             save_video(render_images[0], os.path.join(
-                self.out_path, "render.mp4"), fps=30)
+                f"{self.out_path}renderfiles/", "render.mp4"), fps=30)
             self.timer.end("Rendering")
 
-    def Export_mesh(self):
+    def export_mesh(self):
         # Export the mesh
         self.timer.start("Exporting mesh")
         meshes = self.model.extract_mesh(
