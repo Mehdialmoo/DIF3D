@@ -42,15 +42,10 @@ import imageio
 import trimesh
 import PIL.Image
 import importlib
-# import matplotlib
 import numpy as np
-# import open3d as o3d
 import torch.nn as nn
 import torch.nn.functional as F
-# import matplotlib.pyplot as plt
 
-# import functions
-# from PIL import Image
 from dataclasses import dataclass
 from typing import Any, Dict, List
 from collections import defaultdict
@@ -158,7 +153,7 @@ class ImagePreprocessor:
 
     def __call__(
         self,
-        image: Union[
+        image: Union[  # The image can be of various types
             PIL.Image.Image,
             np.ndarray,
             torch.FloatTensor,
@@ -169,13 +164,15 @@ class ImagePreprocessor:
         size: int,
     ) -> Any:
 
-        if isinstance(
+        if isinstance(  # Checking the type of the image
                 image,
                 (np.ndarray, torch.FloatTensor)) and image.ndim == 4:
 
             image = self.convert_and_resize(image, size)
 
         else:
+            # If the image is not a NumPy array or
+            # a PyTorch tensor with 4 dimensions
             if not isinstance(image, list):
                 image = [image]
             image = [self.convert_and_resize(im, size) for im in image]

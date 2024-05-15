@@ -1,4 +1,45 @@
 """
+This file contains a Gaussian class that uses the GLPN image processor
+and depth estimation model to process an image, estimate its depth,
+and create a 3D point cloud and mesh from the depth information.
+
+The Gaussian class has the following methods:
+
+set_variables:
+sets the input and output paths, foreground ratio,
+and padding for the Gaussian object.
+gassuin_load:
+loads the pre-trained GLPN image processor and depth estimation model.
+pre_process:
+loads an image from the input path, removes the background,
+resizes the foreground, and saves the processed image to the output path.
+pre_depth_estimation:
+resizes the image to have a height of 512 or less,
+and a width proportional to the height.
+depth_estimation:
+preprocesses the image using the GLPN image processor,
+makes predictions using the GLPN depth estimation model,
+converts the predicted depth to a numpy array,
+and saves the preprocessed image to the output path.
+dp_comparison_visual:
+crops the original image to match the output size,
+and displays the original image and the depth image side by side.
+pointcloud:
+converts the predicted depth to an 8-bit image,
+creates a 3D point cloud from the predicted depth and original image,
+and saves the point cloud to the output path.
+post_process:
+removes outliers from the point cloud,
+estimates normals for the point cloud,
+visualizes the point cloud with normals,
+saves the point cloud to the output path,
+creates a mesh from the point cloud using Poisson surface reconstruction,
+rotates the mesh by 180 degrees around the x-axis, visualizes the mesh,
+and saves the mesh to the output path.
+
+The file also imports the necessary libraries for
+image processing and depth estimation,
+and sets the matplotlib backend to TkAgg.
 """
 # Import necessary libraries
 import os
@@ -148,7 +189,7 @@ class Gaussian():
         # Visualize point cloud
         o3d.visualization.draw_geometries([raw_pcd])
         o3d.io.write_point_cloud(
-            f"{self.out_path}/pointcloud_raw.obj", raw_pcd)
+            f"{self.out_path}3dfiles/pointcloud_raw.pcd", raw_pcd)
         self.raw_pcd = raw_pcd
 
     def post_process(self):
@@ -165,7 +206,7 @@ class Gaussian():
         o3d.visualization.draw_geometries([pcd])
 
         o3d.io.write_point_cloud(
-            f"{self.out_path}/pointcloud.obj", pcd)
+            f"{self.out_path}3dfiles/pointcloud.pcd", pcd)
 
         # Create mesh from point cloud using Poisson surface reconstruction
         mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(
@@ -182,4 +223,4 @@ class Gaussian():
         o3d.visualization.draw_geometries([mesh], mesh_show_back_face=True)
         o3d.io.write_point_cloud
         o3d.io.write_triangle_mesh(
-            f"{self.out_path}/forfront_raw_mesh.obj", mesh)
+            f"{self.out_path}3dfiles/forfront_raw_mesh.obj", mesh)

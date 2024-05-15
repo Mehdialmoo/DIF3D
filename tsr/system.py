@@ -1,6 +1,7 @@
 """
 This file defines a Text-Driven 3D Shape Generation and
-Rendering model (difussion 3D) using PyTorch.
+Rendering TSR model (Triangulated
+    Surface Reconstruction) using PyTorch.
 
 The difussion 3D model consists of several components:
 1. Image Tokenizer:
@@ -22,8 +23,8 @@ The file also includes several utility functions and classes for:
 3. Extracting meshes using marching cubes.
 4. Loading pre-trained models from a given path or name.
 
-The file defines a `difussion 3D` class that implements
-the stable diffusion 3d model. The `diff3rd` class has the following methods:
+The file defines a TSR `difussion 3D` class that implements
+the stable diffusion 3d model. The `TSR` class has the following methods:
 
 1. `from_pretrained`: Loads a pre-trained model from a given path or name.
 2. `configure`: Configures the model by initializing the image tokenizer,

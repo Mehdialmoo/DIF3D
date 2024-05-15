@@ -1,0 +1,26 @@
+name: dif3d_ENV
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.11
+  - omegaconf=2.3.0
+  - einops=0.7.0
+  - trimesh=4.0.5
+  - huggingface_hub
+  - imageio=2.19.3
+  - xatlas=0.0.9
+  - moderngl=5.10.0
+  - pip
+  - pip:
+    - git+https://github.com/tatsy/torchmcubes.git
+    - pillow
+    - torch
+    - rembg
+    - matplotlib
+    - numpy
+    - open3d
+    - pillow
+    - transformers
