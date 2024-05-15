@@ -90,18 +90,7 @@ class TSR(BaseModule):
         renderer: dict
 
     # Initialize the TSR class with a configuration
-    def __init__(self, cfg: Config):
-        super().__init__(cfg)
-        self.image_tokenizer = find_class(
-            cfg.image_tokenizer_cls)(cfg.image_tokenizer)
-        self.tokenizer = find_class(cfg.tokenizer_cls)(cfg.tokenizer)
-        self.backbone = find_class(cfg.backbone_cls)(cfg.backbone)
-        self.post_processor = find_class(
-            cfg.post_processor_cls)(cfg.post_processor)
-        self.decoder = find_class(cfg.decoder_cls)(cfg.decoder)
-        self.renderer = find_class(cfg.renderer_cls)(cfg.renderer)
-        self.image_processor = ImagePreprocessor()
-        self.isosurface_helper = None
+    cfg: Config
 
     @classmethod
     # Load a pre-trained model from a given path or name

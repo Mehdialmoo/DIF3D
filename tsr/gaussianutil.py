@@ -1,36 +1,7 @@
 """
-Depth Estimation and 3D Reconstruction using GLPN and Open3D.
-
-The following script demonstrates depth estimation,
-from a single image using the GLPN depth estimation model
-and subsequent 3D reconstruction using Open3D.
-
-firstly load pre-trained GLPN image processor and depth estimation
-model.
-
-Preprocess the image and make predictions using
-the GLPN depth estimation model. Convert the predicted depth to
-a numpy array and resize it to [0, 1000.0]. Crop the output to
-remove padding and crop the original image to match the output size.
-
-Visualize the original image and predicted depth using matplotlib.
-
-Convert the predicted depth to an 8-bit image and
-the original image to a numpy array. Create a 3D point cloud
-from the predicted depth and original image using Open3D.
-
-Create camera intrinsic parameters and create
-a point cloud from the RGBD image using Open3D. Visualize the point cloud.
-
-Remove outliers from the point cloud and estimate normals for the point cloud.
-Visualize the point cloud with normals.
-
-Create a mesh from the point cloud using Poisson surface reconstruction with
-Open3D. Rotate the mesh by 180 degrees around the x-axis and
-visualize the resulting mesh.
-
 """
 # Import necessary libraries
+import os
 import torch
 import rembg
 import matplotlib
@@ -39,7 +10,7 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 
 from PIL import Image
-from utils import remove_background, resize_foreground
+from tsr.utils import remove_background, resize_foreground
 
 # Import Image processing and depth estimation models
 from transformers import GLPNImageProcessor
@@ -50,9 +21,17 @@ matplotlib.use('TkAgg')
 
 class Gaussian():
 
-    def set_variables(self, path, foreground_ratio):
-        self.path = path
+    def set_variables(
+            self,
+            in_path,
+            out_path,
+            foreground_ratio,
+            padding):
+
+        self.in_path = in_path
+        self.out_path = out_path
         self.ratio = foreground_ratio
+        self.pad = padding
 
     def gassuin_load(self):
         # Load pre-trained GLPN image processor and depth estimation model
@@ -63,7 +42,7 @@ class Gaussian():
 
     def pre_process(self):
         # Load image from path
-        image = Image.open(self.path)
+        image = Image.open(self.in_path)
         rembg_session = rembg.new_session()
         # Remove the background and resize the foreground
         image = remove_background(image, rembg_session)
@@ -73,7 +52,13 @@ class Gaussian():
         image = image[:, :, :3] * image[:, :, 3:4] + \
             (1 - image[:, :, 3:4]) * 0.5
         self.image = Image.fromarray((image * 255.0).astype(np.uint8))
-        return self.image
+        self.image.save(
+            os.path.join(
+                f"{self.out_path}images/",
+                "Removed_BG.png"
+            )
+        )
+        return image
 
     def pre_depth_estimation(self):
         image = self.image
@@ -89,7 +74,7 @@ class Gaussian():
         img_size = (img_W, img_H)
         self.img = image.resize(img_size)
 
-    def depth_estimation(self) -> None:
+    def depth_estimation(self):
         self.pre_depth_estimation()
         # Preprocess image using GLPN image processor
         input = self.Extractor(images=self.img, return_tensors='pt')
@@ -105,6 +90,17 @@ class Gaussian():
         # Crop output to remove padding
         pad = self.pad
         self.depth_img = depth_img[pad:-pad, pad:-pad]
+        dp_img = Image.fromarray((depth_img).astype(np.uint8))
+        # Save the preprocessed image
+        if not os.path.exists(os.path.join(self.out_path)):
+            os.makedirs(os.path.join(self.out_path))
+        dp_img.save(
+            os.path.join(
+                f"{self.out_path}images/",
+                "depth.png"
+            )
+        )
+        return dp_img
 
     def dp_comparison_visual(self) -> None:
         # Crop original image to match output size
@@ -114,22 +110,13 @@ class Gaussian():
         img = img.crop(
             (pad, pad, self.img.width-pad, self.img.height-pad))
         self.img = img
-        """
-        # Visualize original image and predicted depth
-        plt.imshow(img)
-        plt.tick_params(left=False, bottom=False,
-                        labelleft=False, labelbottom=False)
 
-        plt.imshow(depth_img, cmap='plasma')
-        plt.tick_params(left=False, bottom=False,
-                        labelleft=False, labelbottom=False)
-        """
         fig, ax = plt.subplots(1, 2, figsize=(15, 7))
         ax[0].imshow(img)  # Display image1 on the left
-        ax[1].imshow(depth_img)  # Display image2 on the right
+        ax[1].imshow(depth_img, cmap='plasma')  # Display image2 on the right
         plt.show()
 
-    def o3rd_estimator(self):
+    def pointcloud(self):
         # Convert predicted depth to 8-bit image
         img = self.img
         W, H = img.size
@@ -160,11 +147,15 @@ class Gaussian():
 
         # Visualize point cloud
         o3d.visualization.draw_geometries([raw_pcd])
+        o3d.io.write_point_cloud(
+            f"{self.out_path}/pointcloud_raw.obj", raw_pcd)
+        self.raw_pcd = raw_pcd
 
+    def post_process(self):
         # Remove outliers from point cloud
-        cl, ind = raw_pcd.remove_statistical_outlier(
+        cl, ind = self.raw_pcd.remove_statistical_outlier(
             nb_neighbors=20, std_ratio=20.0)
-        pcd = raw_pcd.select_by_index(ind)
+        pcd = self.raw_pcd.select_by_index(ind)
 
         # Estimate normals for point cloud
         pcd.estimate_normals()
@@ -172,6 +163,9 @@ class Gaussian():
 
         # Visualize point cloud with normals
         o3d.visualization.draw_geometries([pcd])
+
+        o3d.io.write_point_cloud(
+            f"{self.out_path}/pointcloud.obj", pcd)
 
         # Create mesh from point cloud using Poisson surface reconstruction
         mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(
@@ -186,3 +180,6 @@ class Gaussian():
 
         # Visualize mesh
         o3d.visualization.draw_geometries([mesh], mesh_show_back_face=True)
+        o3d.io.write_point_cloud
+        o3d.io.write_triangle_mesh(
+            f"{self.out_path}/forfront_raw_mesh.obj", mesh)
