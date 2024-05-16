@@ -176,6 +176,8 @@ and the rendering and 3D results are as follows:
 ![](./output/renderfiles/render_005.png)
 ![](./output/renderfiles/render_010.png)
 ![](./output/renderfiles/render_015.png)
+![](./output/renderfiles/render_020.png)
+![](./output/renderfiles/render_025.png)
 
 another example:
 using the below picture
@@ -192,6 +194,8 @@ and the rendering and 3D results are as follows:
 ![](./output_2/renderfiles/render_005.png)
 ![](./output_2/renderfiles/render_010.png)
 ![](./output_2/renderfiles/render_015.png)
+![](./output_2/renderfiles/render_020.png)
+![](./output_2/renderfiles/render_025.png)
 
 
 ## Methodology
