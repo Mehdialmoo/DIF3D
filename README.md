@@ -1,10 +1,11 @@
 # DIF3D: 3D Model Generation from Images
-DIF3D is a 3D model generation system from images. This paper presents a novel approach for generating 3D models from 2D images using a combination of Gaussian and Nerf methods. The proposed method utilizes a pre-trained TSR (Triangulated Surface Reconstruction) model based on NeRF and Gaussian models to generate high-quality 3D models with accurate geometry, smoothness, and color correction. The method consists of several steps, including preprocessing input images, generating 3D models using a pre-trained TSR model, and exporting the 3D mesh in a specified format. The proposed method is implemented in a Python file, which includes several classes and functions for managing the runtime environment, processing input images, generating 3D models, and exporting the 3D mesh. The file also includes a Gaussian class for preprocessing images, estimating depth, and generating 3D point clouds and meshes. The proposed method is evaluated on several datasets and achieves state-of-the-art performance in terms of geometry, smoothness, and color correction.
-
-Keywords: 3D Model Generation, Gaussian Method, Nerf Method, TSR Model, NeRF, Image Processing, Depth Estimation, Point Cloud Generation, Mesh Reconstruction, Computer Vision
+"DIF3D" is a system that transforms 2D images into 3D models, employing a mix of Gaussian and Neural Radiance Fields (NeRF) techniques. It leverages a pre-trained Triangulated Surface Reconstruction (TSR) model to produce 3D models with precise geometry, surface smoothness, and accurate color. The process includes image preprocessing, 3D model generation via TSR, and exporting the mesh. Implemented in Python, it features classes for image processing and depth estimation, achieving top-tier results in model quality.
 
 Table of Contents:
 - [Repository map](#repositorymap)
+- [Introduction](#introduction)
+- [Motivation](#motivation)
+- [contribution](#contribution)
 - [Setup](#setup)
 - [Usage](#usage)
 - [Configuration](#configuration)
@@ -15,9 +16,29 @@ Table of Contents:
     + [Performance]()
     + [Performance]()
     + [Performance]()
-- [contribution](#contribution)
+-[Conclusion](#conclusion)
+
 
 ## Repositorymap
+
+
+## Introduction
+
+DIF3D is a 3D model generation system from images. This paper presents a novel approach for generating 3D models from 2D images using a combination of Gaussian and Nerf methods. The proposed method utilizes a pre-trained TSR (Triangulated Surface Reconstruction) model based on NeRF and Gaussian models to generate high-quality 3D models with accurate geometry, smoothness, and color correction. The method consists of several steps, including preprocessing input images, generating 3D models using a pre-trained TSR model, and exporting the 3D mesh in a specified format. The proposed method is implemented in a Python file, which includes several classes and functions for managing the runtime environment, processing input images, generating 3D models, and exporting the 3D mesh. The file also includes a Gaussian class for preprocessing images, estimating depth, and generating 3D point clouds and meshes. The proposed method is evaluated on several datasets and achieves state-of-the-art performance in terms of geometry, smoothness, and color correction.
+
+## Motivation
+
+3D model generation has become an essential task in computer vision and graphics, with applications in various fields such as robotics, virtual reality, and 3D printing. However, generating high-quality 3D models with accurate geometry, smoothness, and colour correction remains a challenging task. Traditional methods often struggle with complex shapes, textures, and lighting conditions, leading to inaccurate and noisy 3D models. To address these challenges, we propose DIF3D, a cutting-edge system that combines Gaussian methods and Neural Radiance Fields (NeRF) to produce 3D models with precise geometry, smooth surfaces, and accurate colours. By implementing DIF3D in Python and managing the entire process from image input to 3D mesh export, we aim to provide a user-friendly and efficient solution for 3D model generation. Furthermore, we enhance the TSR model using PyTorch, improving its shape generation and rendering capabilities, and making DIF3D applicable in diverse areas like computer vision, robotics, and graphics.
+
+Keywords: 3D Model Generation, Gaussian Method, Nerf Method, TSR Model, NeRF, Image Processing, Depth Estimation, Point Cloud Generation, Mesh Reconstruction, Computer Vision
+
+## Contribution
+* in this project we have developed a 3D model generation system called DIF3D, which combines Gaussian and Nerf methods to generate high-quality 3D models with accurate geometry, smoothness, and colour correction.
+* We have implemented DIF3D in a Python file, which is for managing the runtime environment, processing input images, generating 3D models, and exporting the 3D mesh.
+* We have created a Gaussian class for preprocessing images, estimating depth, and generating 3D point clouds and meshes.
+* We have achieved state-of-the-art performance in terms of geometry, smoothness, and colour correction.
+* We have provided a comprehensive framework for processing images, estimating depth, and generating 3D point clouds and meshes in the Gaussianutils file.
+* You have enhanced a 3D Shape Generation based on Zero1-to-3++ and Rendering model, named TSR (Triangulated Surface Reconstruction), using PyTorch in the System.py file.
 
 ## Setup
 To be able to use the code firstly, run the following command :
@@ -131,26 +152,14 @@ This Python file is designed to manage the runtime environment and perform vario
     The Runtime class is the main class that manages the runtime environment and performs various tasks. It has several methods to set variables, check and create output directories, check and set the device for computation, initialize the pre-model and TSR model, process input images, run the TSR model, render the 3D model, and export the 3D mesh in a specified format.
 
 ### Utils.py
-This file contains a Python script that defines various classes and functions for 3D rendering and image processing. The script includes a base module class BaseModule that other modules can inherit from, and an ImagePreprocessor class for preprocessing images. It also provides functions for checking if rays intersect with a bounding box, chunking a batch of data and applying a function to each chunk, scaling a tensor, getting an activation function by name, getting ray directions for all pixels in camera coordinate, getting rays in the world coordinate, getting spherical cameras, removing the background of an image, resizing the foreground of an image, saving a list of frames as a video, and converting a mesh to a format suitable for Gradio 3D visualization.
+This file contains a Python script that defines various classes and functions for 3D rendering and image processing. The script includes a base module class BaseModule that other modules can inherit from, and an ImagePreprocessor class for preprocessing images. It also provides functions for checking if rays intersect with a bounding box, chunking a batch of data and applying a function to each chunk, scaling a tensor, getting an activation function by name, getting ray directions for all pixels in camera coordinate, getting rays in the world coordinate, getting spherical cameras, removing the background of an image, resizing the foreground of an image, saving a list of frames as a video, and converting a mesh to a format suitable for Gradio 3D visualisation.
 
-### gaussiantils
-This Python file implements a Gaussian class that utilizes a GLPN image processor and depth estimation model to process an image, estimate its depth, and create a 3D point cloud and mesh from the depth information.this file provides a comprehensive framework for processing images, estimating depth, and generating 3D point clouds and meshes, The file consists of several methods that perform the following tasks:
-
-It starts by preparing the image through background removal and resizing, making it ready for further analysis. The script then estimates the depth of the image using a model, which is essential for creating a 3D perspective. Using the depth information, it generates a point cloud, which is a collection of data points in space representing the image in three dimensions. and Finally, the script refines the point cloud by removing noise and outliers, and reconstructs a 3D mesh, providing a complete 3D model of the original image
+### Gaussianutils
+This Python file implements a Gaussian class that utilises a GLPN image processor and depth estimation model to process an image, estimate its depth, and create a 3D point cloud and mesh from the depth information. this file provides a comprehensive framework for processing images, estimating depth, and generating 3D point clouds and meshes, the file consists of several methods that perform the following tasks:
+It starts by preparing the image through background removal and resizing, making it ready for further analysis. The script then estimates the depth of the image using a model, which is essential for creating a 3D perspective. Using the depth information, it generates a point cloud, which is a collection of data points in space representing the image in three dimensions. and finally, the script refines the point cloud by removing noise and outliers, and reconstructs a 3D mesh, providing a complete 3D model of the original image.
 
 ### System.py
+This file defines a Text-Driven 3D Shape Generation and Rendering model, named TSR (Triangulated Surface Reconstruction), using PyTorch. The model generates 3D shapes from textual descriptions and renders them into 2D images. The file defines a TSR class that implements the stable diffusion 3D model. The TSR class has several methods, including from_pretrained for loading a pre-trained model, configure for configuring the model, forward for performing a forward pass through the model, render for rendering the scene codes into 2D images, set_marching_cubes_resolution for setting the marching cubes resolution, and extract_mesh for extracting meshes from the scene codes using marching cubes. The file also includes a BaseModule class that provides a common interface for all the components of the diffusion 3D model.
 
-This file defines a Text-Driven 3D Shape Generation and and Rendering model, named TSR (Triangulated Surface Reconstruction), using PyTorch. The model generates 3D shapes from textual descriptions and renders them into 2D images. The file defines a TSR class that implements the stable diffusion 3D model. The TSR class has several methods, including from_pretrained for loading a pre-trained model, configure for configuring the model, forward for performing a forward pass through the model, render for rendering the scene codes into 2D images, set_marching_cubes_resolution for setting the marching cubes resolution, and extract_mesh for extracting meshes from the scene codes using marching cubes. The file also includes a BaseModule class that provides a common interface for all the components of the diffusion 3D model.
-
-## Contribution
-* in this project we have developed a 3D model generation system called DIF3D, which combines Gaussian and Nerf methods to generate high-quality 3D models with accurate geometry, smoothness, and color correction.
-
-* We have implemented DIF3D in a Python file, whichis for managing the runtime environment, processing input images, generating 3D models, and exporting the 3D mesh.
-
-* We have created a Gaussian class for preprocessing images, estimating depth, and generating 3D point clouds and meshes.
-
-* We have achieved state-of-the-art performance in terms of geometry, smoothness, and color correction.
-
-* We have provided a comprehensive framework for processing images, estimating depth, and generating 3D point clouds and meshes in the gaussiantils file.
-
-* You have enhanced a 3D Shape Generation based on Zero1-to-3++ and Rendering model, named TSR (Triangulated Surface Reconstruction), using PyTorch in the System.py file.
+## Conclusion
+DIF3D is a cutting-edge system for creating 3D models. It combines Gaussian methods and Neural Radiance Fields (NeRF) to produce models with precise geometry, smooth surfaces, and accurate colours. The system is implemented in Python and manages the entire process from image input to 3D mesh export, achieving top-notch results. Additionally, it includes a framework for image processing, depth estimation, and 3D point cloud and mesh generation. The TSR model, which stands for Triangulated Surface Reconstruction, has been improved using PyTorch, enhancing its shape generation and rendering capabilities. DIF3D's advancements make it applicable in diverse areas like computer vision, robotics, and graphics.
