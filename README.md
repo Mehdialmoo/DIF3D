@@ -1,4 +1,7 @@
 # DIF3D: 3D Model Generation from Images
+<figure class="video_container">
+./output/renderfiles/render.mp4
+
 "DIF3D" is a system that transforms 2D images into 3D models, employing a mix of Gaussian and Neural Radiance Fields (NeRF) techniques. It leverages a pre-trained Triangulated Surface Reconstruction (TSR) model to produce 3D models with precise geometry, surface smoothness, and accurate color. The process includes image preprocessing, 3D model generation via TSR, and exporting the mesh. Implemented in Python, it features classes for image processing and depth estimation, achieving top-tier results in model quality.
 
 Table of Contents:
@@ -11,15 +14,35 @@ Table of Contents:
 - [Configuration](#configuration)
 - [Results]()
 - [Methodology](#methodology)
-    + [Performance]()
-    + [Performance]()
-    + [Performance]()
-    + [Performance]()
-    + [Performance]()
+    + [Dif3d](#dif3d)
+    + [Utils](#utils)
+    + [Gaussianutils](#gaussianutils)
+    + [System](#system)
 -[Conclusion](#conclusion)
 
 
 ## Repositorymap
+```
+    DIF3d
+    │
+    ├── output/
+    │   ├── 3dfiles   
+    │   ├── images
+    │   └── renderfiles
+    │   
+    ├── tsr/
+    │   ├── models/
+    │   ├── gaussianutil.py  
+    │   ├── system.py
+    │   └── utils.py
+    │    
+    ├── .gitignore
+    ├── README.md
+    ├── LICENSE
+    ├── dif3d__ENV.yml
+    ├── dif3d.py
+    └── workspace.ipynb
+```
 
 
 ## Introduction
@@ -139,10 +162,32 @@ Runing the code completley will show case preprocessing results and saves the fi
 + #### A video of the rendered images in the output/renderfiles/ directory.
 + #### A 3D mesh in the output/3dfiles/ directory.
 
+now let us look into one of the experiments that have been done using the below picture
+![](./output/images/Removed_BG.png)
+after running the model it generated the following depth map:
+![](./output/images/depth.png)
+and the rendering and 3D results are as follows:
+![](./output/renderfiles/render_000.png)
+![](./output/renderfiles/render_005.png)
+![](./output/renderfiles/render_010.png)
+![](./output/renderfiles/render_015.png)
+
+another example:
+using the below picture
+![](./output_2/images/Removed_BG.png)
+after running the model it generated the following depth map:
+![](./output_2/images/depth.png)
+and the rendering and 3D results are as follows:
+![](./output_2/renderfiles/render_000.png)
+![](./output_2/renderfiles/render_005.png)
+![](./output_2/renderfiles/render_010.png)
+![](./output_2/renderfiles/render_015.png)
+
+
 ## Methodology
 This program is Set to generate a full 3d model out of one single image. the method is a combination of Gaussian and Nerf method to reach the highest possible geometry in of shape, smoothness and color correction. to be able to do this we used Stability AI's 3Ddiffusion (AKA. TSR(Triangulated Surface Reconstruction)) annd Gaussian model. firstly we generate the geometry and point cloud and depth estimations to create a 2.5D point cloud and mesh. to use in nerf for a better and more smooth geometry and resulting in better structure of 3D in the generated 3D models. our Contribution is on 4 files as follows:
 
-### Dif3d.py:
+### Dif3d
 This Python file is designed to manage the runtime environment and perform various tasks related to processing input images and generating 3D models using a pre-trained TSR (Triangulated Surface Reconstruction) model. The script includes several classes and functions to accomplish these tasks. In summary, this script provides a framework for processing input images, generating 3D models using a pre-trained TSR model, and exporting the 3D mesh in a specified format. The script measures the execution time of various tasks using the Timer class and logs messages using the logging module. The script also checks and sets the device for computation (GPU or CPU) and creates necessary output directories.
 
 * #### Timer
@@ -151,14 +196,14 @@ This Python file is designed to manage the runtime environment and perform vario
 * #### Runtime
     The Runtime class is the main class that manages the runtime environment and performs various tasks. It has several methods to set variables, check and create output directories, check and set the device for computation, initialize the pre-model and TSR model, process input images, run the TSR model, render the 3D model, and export the 3D mesh in a specified format.
 
-### Utils.py
+### Utils
 This file contains a Python script that defines various classes and functions for 3D rendering and image processing. The script includes a base module class BaseModule that other modules can inherit from, and an ImagePreprocessor class for preprocessing images. It also provides functions for checking if rays intersect with a bounding box, chunking a batch of data and applying a function to each chunk, scaling a tensor, getting an activation function by name, getting ray directions for all pixels in camera coordinate, getting rays in the world coordinate, getting spherical cameras, removing the background of an image, resizing the foreground of an image, saving a list of frames as a video, and converting a mesh to a format suitable for Gradio 3D visualisation.
 
 ### Gaussianutils
 This Python file implements a Gaussian class that utilises a GLPN image processor and depth estimation model to process an image, estimate its depth, and create a 3D point cloud and mesh from the depth information. this file provides a comprehensive framework for processing images, estimating depth, and generating 3D point clouds and meshes, the file consists of several methods that perform the following tasks:
 It starts by preparing the image through background removal and resizing, making it ready for further analysis. The script then estimates the depth of the image using a model, which is essential for creating a 3D perspective. Using the depth information, it generates a point cloud, which is a collection of data points in space representing the image in three dimensions. and finally, the script refines the point cloud by removing noise and outliers, and reconstructs a 3D mesh, providing a complete 3D model of the original image.
 
-### System.py
+### System
 This file defines a Text-Driven 3D Shape Generation and Rendering model, named TSR (Triangulated Surface Reconstruction), using PyTorch. The model generates 3D shapes from textual descriptions and renders them into 2D images. The file defines a TSR class that implements the stable diffusion 3D model. The TSR class has several methods, including from_pretrained for loading a pre-trained model, configure for configuring the model, forward for performing a forward pass through the model, render for rendering the scene codes into 2D images, set_marching_cubes_resolution for setting the marching cubes resolution, and extract_mesh for extracting meshes from the scene codes using marching cubes. The file also includes a BaseModule class that provides a common interface for all the components of the diffusion 3D model.
 
 ## Conclusion
