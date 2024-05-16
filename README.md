@@ -1,6 +1,6 @@
 # DIF3D: 3D Model Generation from Images
 
-![](./0001.webp)
+![](./2D Image.png)
 
 "DIF3D" is a system that transforms 2D images into 3D models, employing a mix of Gaussian and Neural Radiance Fields (NeRF) techniques. It leverages a pre-trained Triangulated Surface Reconstruction (TSR) model to produce 3D models with precise geometry, surface smoothness, and accurate color. The process includes image preprocessing, 3D model generation via TSR, and exporting the mesh. Implemented in Python, it features classes for image processing and depth estimation, achieving top-tier results in model quality.
 
