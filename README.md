@@ -1,6 +1,6 @@
 # DIF3D: 3D Model Generation from Images
-<figure class="video_container">
-./output/renderfiles/render.mp4
+<video controls src="https://github.com/Mehdialmoo/Masterclass/blob/main/output/renderfiles/render.mp4" title="./output/renderfiles/render.mp4"></video>
+<video controls src="https://github.com/Mehdialmoo/Masterclass/blob/main/output_2/renderfiles/render.mp4" title="./output/renderfiles/render.mp4"></video>
 
 "DIF3D" is a system that transforms 2D images into 3D models, employing a mix of Gaussian and Neural Radiance Fields (NeRF) techniques. It leverages a pre-trained Triangulated Surface Reconstruction (TSR) model to produce 3D models with precise geometry, surface smoothness, and accurate color. The process includes image preprocessing, 3D model generation via TSR, and exporting the mesh. Implemented in Python, it features classes for image processing and depth estimation, achieving top-tier results in model quality.
 
@@ -163,10 +163,15 @@ Runing the code completley will show case preprocessing results and saves the fi
 + #### A 3D mesh in the output/3dfiles/ directory.
 
 now let us look into one of the experiments that have been done using the below picture
+
 ![](./output/images/Removed_BG.png)
+
 after running the model it generated the following depth map:
+
 ![](./output/images/depth.png)
+
 and the rendering and 3D results are as follows:
+
 ![](./output/renderfiles/render_000.png)
 ![](./output/renderfiles/render_005.png)
 ![](./output/renderfiles/render_010.png)
@@ -174,10 +179,15 @@ and the rendering and 3D results are as follows:
 
 another example:
 using the below picture
+
 ![](./output_2/images/Removed_BG.png)
+
 after running the model it generated the following depth map:
+
 ![](./output_2/images/depth.png)
+
 and the rendering and 3D results are as follows:
+
 ![](./output_2/renderfiles/render_000.png)
 ![](./output_2/renderfiles/render_005.png)
 ![](./output_2/renderfiles/render_010.png)
